@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://web.mit.edu/j_g0m3z/www/G.JPG">
+
+    <title>RSS First Team Best Team</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/starter-template.css" rel="stylesheet">
+    <script src="js/ie-emulation-modes-warning.js"></script>
+    <script src="js/ie10-viewport-bug-workaround.js"></script>
+
+  </head>
+
+  <!-- NAVBAR
+================================================== -->
+  <body>
+    <div class="navbar-wrapper">
+      <div class="container">
+
+        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="../index.html">RSS First Team Best Team</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/about_barebones/index.html">About</a></li> -->
+                <li ><a href="../about/index.html">About</a></li>
+                <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/Jose_Gomez_resume_Fall_2016.pdf">Resume</a></li> -->
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Labs <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../lab2_web/index.html">Lab 2</a></li>
+                    <li><a href="../lab3_web/index.html">Lab 3</a></li>
+                    <li><a href="../lab4_web/index.html">Lab 4</a></li>
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/zerog_barebones/index.html">Control Moment Gyroscopes (CMGs)</a></li> -->
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/righthand_barebones/index.html">RightHand Robotics</a></li> -->
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/1682_barebones/index.html">Senior Capstone</a></li> -->
+                  </ul>
+                </li>               
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class = "container" align='center'>
+    <h1>LAB 4: Report </h1>
+    <h3>Team 1</h3>
+    <div align='center'>
+      <p1> Clementine Mitchell, Martina Stadler, Nick Villanueva, Samir Wadhwania, Jake Liguori, Jose Gomez<p1/>
+   
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h3>Overview - Jake</h3>
+    <div align='left'>
+      <p1> The purpose of this lab was to have teams approach and solve problems in autonomous vehicles utilizing visual servoing.  The racecar uses a Zed camera to view its surroundings.  We had to subscribe to this data, interpret it, and implement control algorithms that tackled two particular problems: parking a set distance from an object and following curved trajectories.  An bright orange cone was used as a reference for parking, and we were tasked with parking 1.5-2 feet from the cone.  For line following, a circular track was created from bright orange tape (though a slightly different hue).  Control methods employed were open loop, setpoint, and pure pursuit.  We also tested line following on sharper turns also drawn by this tape.<p1/>
+   
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h3>Approaches - Jake</h3>
+    <div align='left'>
+      <p1> Our team broke up into sub-teams for each portion of the lab (parking and line following).  Before we could begin building controllers, we had to select which cone detection algorithm we would employ throughout the lab.  Each group of 1-2 people attempted to find the cone from camera image inputs.  The most accurate method (color segmentation) was ultimately employed.  Then we split up into teams once again, this time to focus on algorithm modification (which was necessary to deliver specific inputs to each controller), controller development, and controller tuning/implementation on the racecar.<p1/>
+        <br></br>
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Cone Detection</h1>
+    <h3>Color Segmentation - Jose & Martina</h3>
+    <div align='left'>
+      <p1> One of the cone detection techniques we considered was color segmentation. In layman’s terms, color segmentation uses a pixel’s color values to determine if the pixel is part of an area of interest or not. This technique is particularly effective in high-contrast areas where the object of interest is a different color than the rest of the scene. Our scene fits this description; our bright orange cone/tape stands out against our blue lab benches and white floors and walls.<p1/><br></br>
+      <p2>The color segmentation technique has four main components:</p2>
+      <ol>
+        <li>Determine appropriate color thresholds for a given environment</li>
+        <li>Apply the threshold to a new image to create a mask, a binary representation of the image</li>
+        <li>Use the mask to find contours within the image</li>
+        <li>Generalize the contours to a bounding box and centroid location</li>
+      </ol>
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h4>Determine Color Thresholds:</h4>
+    <div align='left'>
+      <p1> To determine the proper color thresholds for our environment, the team took sample photos of the cone and tape in our lab environment. Then, we sampled pixels of our target object in the images to determine our thresholds for both the cone and the tape. We set our thresholds to be just below and above the lowest and highest values we saw in our sampling methods.<p1/><br></br>
+      <p2>In order to make our color detection more robust in locations with different lighting, the team chose to use the HSV (Hue, Saturation, and Value) color space rather than the RGB (Red, Green, Blue) color space. Similarly to RGB, HSV uses three values to represent a specific color. However, in HSV space, the absolute color, or hue of objects, is less correlated with the brightness of the image than in RGB. This provides robustness in a variety of different lighting situations, and because of this, many robotics professionals use the HSV space. Because our team knew that our lighting conditions could change, particularly considering that we often test outside of lab, we chose to use the HSV space.</p2><br></br>
+      <p3>Once we determined our representative values in HSV space, we scaled our values to accommodate the OpenCV HSV expected ranges - [0-179], [0-255], and [0-255] for H, S, and V respectively.</p3>
+        <br></br>
+    </div>
+    </div><!-- /.container -->    
+
+    <div class = "container" align='left'>
+    <h4>Create Mask:</h4>
+    <div align='left'>
+      <p1> After determining representative threshold values for our desired shade of orange, we used the OpenCV threshold() function to filter the image through our thresholds, pixel-by-pixel, to create a mask. A mask is a binary image used to simplify image processing. In general, when creating a mask, if a pixel’s color space values are in the specified range, the pixel appears as white in the mask; otherwise, it appears as black. In our case, if the pixel’s HSV values are within our range for orange, the pixel appears as white in the mask; if it is not within our thresholds, it appears as black in the mask.<p1/><br></br>
+      <div align="center">
+      <img src="../lab4_web/img/figure1.jpeg" align="middle"><br></br>
+      <p1>Figure 1: Sample mask of the cone.</p1>
+    </div>
+        <br></br>
+    </div>
+    </div><!-- /.container -->    
+
+    <div class = "container" align='left'>
+    <h4>Find Image Contours:</h4>
+    <div align='left'>
+      <p1> After creating the mask, we passed this binary image into the OpenCV findContours( ) method in order to obtain the contours of the orange cone. These contours are made up of all the pixel coordinates the findContours( ) method identified as the outer edge of the traffic cone, and an example of all these points plotted is shown in figure 2. As can be seen in the contour example the full shape of the cone, including the base which can vary in orientation, is encompassed in the contour. For this reason, along with the fact that the quality of the contour generated is dependent on the quality of the mask created from thresholding, the contour points needed to be simplified in order to create an efficient and robust input for the parking controller.<p1/><br></br>
+      <div align="center">
+      <img src="../lab4_web/img/figure2.jpeg" align="middle"><br></br>
+      <p1>Figure 2: Sample contour shown in yellow</p1>
+    </div>
+        <br></br>
+    </div>
+    </div><!-- /.container -->  
+
+    <div class = "container" align='left'>
+    <h4>Find Bounding Box and Centroid:</h4>
+    <div align='left'>
+      <p1> The simplification of the contours we made, which would fully characterize the location of the cone, was to take all the contour points and create a centroid along with a bounding box. The centroid was created using OpenCV’s moments( ) method, which takes in all the contour coordinates and outputs the centroid coordinate. With this centroid the direction of the cone relative to the car would be calculated and passed to the parking controller as an input for steering. The other item needed to characterize the location of the cone is the bounding box generated through OpenCV’s boundingRect( ) method. This bounding box encompasses the entirety of the cone excluding the base so that the height of the bounding box does not vary with orientation of the cone’s base. Using the bounding box’s height and how this changes with the cone’s distance away from the car, we could then determine the car’s relative distance to the cone.<p1/><br></br>
+      <div align="center">
+      <img src="../lab4_web/img/figure3.jpeg" align="middle"><br></br>
+      <p1>Figure 3: Sample bounding box(green) and centroid(blue)</p1>
+    </div>
+        <br></br>
+    </div>
+    </div><!-- /.container -->      
+
+    <div class = "container" align='left'>
+    <h3>SIFT+RANSAC - Nick</h3>
+    <div align='left'>
+      <p1> Another object detection method we looked into using was Scale-Invariant Feature Transform or SIFT that utilized Random Sampling Consensus or RANSAC. This algorithm is good at detecting objects in a photo regardless of orientation and scale. The algorithm works by creating features in two images and finding matches. Several methods are used to find these key points. SIFT uses Difference of Gaussian to locate keypoints in the image by finding local extrema or interesting blobs in the images. One note is that the algorithm does not use edges as keypoints and instead disregards them. After the keypoints are found, they are given descriptors by taking the intensity gradient of the pixel grid around the keypoint and creating an orientation histogram. Next, matches for the keypoints can be found and RANSAC is used to help filter out possible false matches.<p1/><br></br>
+      <p2>While this algorithm is great for detecting objects in images it is only really useful for locating objects that have a lot of features. Unfortunately, the cone used for the lab does not have a lot of features. While it does have a distinct outline, the edge points are not used as keypoints with SIFT. To confirm that this method would not be suitable for our purpose, we tested the algorithm by having it attempt to locate a cone, a low feature item, and then have it locate a peanut butter container, a high feature item. This test showed exactly what we were expecting, it was able to locate the peanut butter container without a problem, but it struggled to find the cone as seen in figure X.</p2><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure4.jpeg" align="middle" width='300' height="200">
+      <img src="../lab4_web/img/figure4R.jpeg" align="middle" width='300' height="200"><br></br>
+      <p1>Figure 4: SIFT on Cone vs Peanut Butter</p1>
+    </div>
+        <br></br>
+    </div>
+    </div><!-- /.container --> 
+
+    <div class = "container" align='left'>
+    <h3>Histogram of Oriented Gradients - Jake & Clemmie</h3>
+    <div align='left'>
+      <p1> We implemented a Histogram of Oriented Gradients (HOG) algorithm as a potential method of object detection of the cone. We initially thought that the HOG algorithm may be a suboptimal solution to this problem because it typically is used for describing the features on an input image, which can then be compared to the features on a template image of the object you are trying to detect; however, on a cone there are very few features. This meant that after implementing this algorithm, we chose not to train it specifically for the cone. It is possible that it could be useful for something at a later stage of this class.</p1><br></br>
+      <h4>The HOG Algorithm:</h4><br></br>
+      <p1>After pre-processing the image from the ZED camera to achieve a gray scale image, the following steps are used to achieve the final feature descriptor:</p1><br></br>
+      <ol>
+        <li>We calculated the vertical and horizontal gradients of each pixel with its surrounding neighbours, thus achieving a vector describing the magnitude and direction of the gradient. The equations for the magnitude and direction of the gradient vector respectively are:<br></br>
+        <div align="center">
+        <img src="../lab4_web/img/figure5.png" align="middle"><br></br></div>
+        The vertical and horizontal gradients for each pixel are calculated using the surrounding pixels for example:<br></br>
+        <div align="center">
+        <img src="../lab4_web/img/figure6.png" align="middle"><br></br>
+        <p1>Figure 5: Calculating the gradient vectors for each pixel by comparing it to adjacent pixels</p1><br></br></div></li>
+        <li>After calculating the gradient vector for each individual pixel, we created a histogram of the oriented gradients for each 8x8 set of pixels, which we will now refer to as a cell. For each cell, we created a histogram of 9 bins. Each bin represents an orientation of a vector from 0° to 180° in intervals of 20. As is convention, we used the unsigned gradients because we only considered the orientation of the gradient and not the direction (positive or negative) of the change along that orientation. The gradient vectors for each pixel are put into the corresponding bin and are scaled according to magnitude. If a gradient direction is in between two bins then a weighted part of its magnitude goes into the lower bin and a weighted part goes into the higher bin. For example if a gradient is oriented at 15° then ¼ of its magnitude would be placed in the 0° bin and ¾ of its magnitude would go into the 20° bin. Now, we have a histogram for each 8 cell.<br></br></li>
+        <li>In order to make all cells invariant to illumination change, we now normalized all cell histogram.  We did so in blocks, which by convention we had consist of 4 cells in a 2x2 grid.  It should be noted that these blocks have a 50% overlap, meaning that most cells were used for multiple normalizations.<br></br></li>
+        <li>To create the final feature descriptor, we placed the value of each histogram bin in each cell into the final 1D array.  By repeating this step for every cell in each block horizontally and vertically, we created the final feature descriptor, which we then used as our template for implementation of histogram of oriented gradients.  To better understand the order of magnitude of this array, a 720 x 1280 pixel image with 8x8 pixel cells and 2x2 cell blocks would consist of 99 blocks across and 159 blocks vertically.  Each block has 4 cells and 9 bins in each histogram.  Thus, our final feature descriptor contains 566676 values.<br></br></li>
+      </ol>
+        <br></br>
+        <h4>Implementation of the Algorithm</h4><br></br>
+        <p1>We were able to implement this algorithm using the built-in Python function from the skimage.feature package:</p1><br></br>
+        <div align="center">
+        <img src="../lab4_web/img/figure7.png"><br></br>
+      </div>
+        <p1>In this function, we output the full feature descriptor (of length 509,436 for the full-sized image from the ZED camera) and how the image processed with HOG looked after being processed. It was these images that caused us to realize that the HOG algorithm was not really appropriate for the cone detection task.</p1><br></br>
+      </div>
+      <h4>Images Obtained Using HOG</h4><br></br>
+      <p1>The following images were obtained for a cone at 2 feet from the front of the car:</p1><br></br>
+      <div align="center">
+      <img src="../lab4_web/img/figure8L.jpeg"><br></br>
+      <p1>Figure 6: Left - Input image of the cone from the ZED camera on the gray scale; Right - Image after being processed with the HOG algorithm.</p1>
+      <br></br>
+    </div>
+    <p1>This was the template cone that we attempted to compare the image to:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure9L.jpeg"><br></br>
+      <p1>Figure 7: Left - Gray scale image of the template cone to be detected using the ZED camera; Right - Template image after processing with the HOG algorithm.</p1><br></br>
+    </div>
+    <h4>Deciding Not to Train HOG to Detect Cones</h4><br></br>
+    <p1>As is clear from the above HOG images, it is possible to visually pick out the cone (after the intensity of the output image has been rescaled); however, due to the lack of features on the cone it is not particularly obvious and it gets much worse as the cone moves further away. This, alongside the fact that our color segmentation method was already working wonderfully well, was why we chose not to spend a lot of time training this algorithm to detect cones. We believe it is better suited to the detection of objects more dense with features.</p1><br></br>
+    </div>
+    </div><!-- /.container --> 
+
+    <div class = "container" align='left'>
+    <h3>Template Matching - Samir</h3>
+    <p1>We also tested the implementation and effectiveness of a template matching algorithm with the cone against low-contrast and high-contrast backgrounds, as well as in a rotated orientation. The algorithm works by taking a <i>template</i> image, placing it at the top left corner of a <i>test</i> image, and determining the likelihood of a match in that position. It then proceeds to check every possible position of the template in the image, moving right and down from the start until it reaches the bottom right corner of the <i>test</i>. The position with the greatest correlation coefficient is determined to be the most likely match, and the information can be used to determine the position of the cone in the overall image. The test cone used was the following image:</p1><br><br>
+    <div align="center">
+      <img src="../lab4_web/img/template_cone.png"><br><br>
+      <p1>Figure 8: Template Cone for Template Matching</p><br>
+    </div>
+    <p1>We implemented this with OpenCV’s function: <span style="font-family:courier;">cv2.matchTemplate().</span> Specifically, we utilized the <span style="font-family:courier;">cv2.TM_CCOEFF</span> to keep track of the correlation coefficient of the greatest match. Testing the template in the image it was cropped from led to a perfect match - no surprise there. However, one critical issue with template matching is its inability to handle changes in size to the template relative to the test. In other words, if our car moved farther or closer to the cone, and the cone’s height in pixels changed, template matching failed. In order to fix this, we used a pyramid scaling technique.</p><br><br>
+    <h4>Rescaling</h4><br><br>
+    <p1>Essentially, we rescaled the <i>test</i> image to various sizes (from 5% original size to 100% original size). At each scale, the greatest template match position and correlation coefficient was determined. A tracker variable was used to maintain the best match so far; once the image had finished running through each rescaling, we used the final position and scale ratio of our best match to determine the true position of the <i>template.</i> A drawback of this rescaling procedure was that the image was resized a discrete number of times in different scales. It is entirely possible for the <i>template</i> to never perfectly match the cone in the <i>test</i> image because of this. However, this leads to a convenient knob - we can trade runtime for precision. To increase the likelihood of matching perfectly with the <i>template</i> and returning a very precise output, we can simply increase the number of rescales to test (e.g. try 100 scales instead of 40). However, this increases the runtime of the algorithm significantly.</p><br><br>
+    <h4>Edge Detection</h4><br><br>
+    <p1>In order to make the algorithm more robust to a low contrast environment, we implemented a basic edge detection filter on both the template and the image. First, images were converted to grayscale with <span style="font-family:courier;">cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)</span>. Secondly, the Canny Edge Detector was implemented with <span style="font-family:courier;">cv2.Canny(image, 50, 200)</span>. This meant the <i>template</i> now looked like this: </p><br><br>
+    <div align="center">
+      <img src="../lab4_web/img/template_canny.png"><br><br>
+      <p1>Figure 9: Canny Edge Detection on the Template Image</p><br>
+    </div>
+    <p1>And the <i>test</i> looked like this:</p><br><br>
+    <div align="center">
+      <img src="../lab4_web/img/test_canny.png" width="400" height="300"><br><br>
+      <p1>Figure 10: Canny Edge Detection on the Test Image</p><br>
+    </div>
+    <h4>Results</h4><br><br>
+    <p1>After the implementation of both the pyramid scaling and the Canny edge detection, we were able to test it on images of the cone at varying distances. As you can see below, the template matching performed spectacularly against even low contrast backgrounds.</p><br><br>
+    <div align="center">
+      <img src="../lab4_web/img/figure10_1.jpeg" width="200" height="150" style="margin:2px 1px">
+      <img src="../lab4_web/img/figure10_2.jpeg" width="200" height="150" style="margin:2px 1px">
+      <img src="../lab4_web/img/figure10_3.jpeg" width="200" height="150" style="margin:2px 1px">
+      <img src="../lab4_web/img/figure10_4.jpeg" width="200" height="150" style="margin:2px 1px">
+      <img src="../lab4_web/img/figure10_5.jpeg" width="200" height="150" style="margin:2px 1px">
+      <img src="../lab4_web/img/figure10_6.jpeg" width="200" height="150" style="margin:2px 1px"><br></br>
+      <p1>Figure 11: Template Matching Results</p><br><br>
+    </div>
+    <div>
+    </div><!-- /.container -->   
+
+    <div class = "container" align='left'>
+    <h3>Determining the Distance to the Cone using Polynomial Fit - Nick</h3>
+    <p1>In order to find the distance of the cone from the front of the car we had to map what the camera saw to real world distances. To do this we took empirical data on the camera picked up for different distances of the cone. For each distance we were able to get the height in pixels of the cone. Then using the polyfit function from numpy, we were able to fit a third order function to the pixel height vs real world distance. This would give us the distance of the cone from the car given a certain pixel height.</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure10.5.jpeg" width="400" height="300"><br></br>
+      <p1>Figure 12: Pixel Height to Distance</p1>
+    </div>
+        <br></br>
+    </div><!-- /.container -->     
+
+    <div class = "container" align='left'>
+    <h1>Parking Control</h1><br></br>
+    <h3>Node Diagrams for Different Controllers - Samir</h3><br>
+    <p1>The architecture for the cone followers and controllers were all fairly straightforward. Images were taken from the <span style="font-family:courier;">zed/rgb/image_rect_color/</span> topic, and passed into a detection node. For each of the tasks, a different detection node was used depending on what information needed to be extracted for the controller. After the information was correctly extracted, it was then passed into a Follow or Controller node that converted the information into a drive command. Finally, the drive command was published to the <span style="font-family:courier;">ackermann_cmd_mux/input/nav_0</span> topic to be relayed to the motor and steering servos.</p><br>
+
+    <p1>The Open Loop control differed in that no sensing was necessary (hence, open loop). Therefore, we only had one node that constantly published to the drive topic regardless of the Image being detected.</p><br><br>
+    <div align="center">
+      <img src="../lab4_web/img/figure11.jpeg" width="600" height="450"><br></br>
+      <p1>Figure 13:  Layout of Nodes and Topics</p1><br></br>
+    </div>
+    <h3>Vehicle Controllers for Cone Following and Parking - Samir & Nick</h3>
+    <p1>We implemented two proportional controllers to follow and park in front of the cone. One controller would handle centering the car on the cone and the other would maintain a set distance from the cone. We used the centroid location in pixels of the cone to determine how off center our car was in relation to it and scaled that number to range from -.5 to .5. We then fed this error to the proportional controller to create steering angle commands for the car. </p1><br></br>
+    <p1>The distance of the car from the cone was created from using the polynomial fit from our image data. We then made a set point of 2 feet for the car to station itself in front of the cone. The error of the actual distance minus the set point was sent to the other proportional controller to create speed commands for the car. If the car was moving in reverse, the steering commands were reversed so that it would still center itself when moving backwards. The two commands, steering and speed were then sent to the car.</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/parking.gif" width="450" height="300"><br></br>
+      <p1>Figure 14:  Parking Controller</p1>
+    </div><br><br>
+    </div><!-- /.container -->
+
+
+
+    <div class = "container" align='left'>
+    <h1>Path Following</h1>
+    <h3>Open Loop Control - Jake</h3>
+    <p1>As seen in Figure 12, open loop control of the racecar requires that we simply select a steering angle and publish this to the appropriate racecar topic.  For a circle with a 5 foot radius and with the assumption that we begin perfectly aligned with the circle, this can be theoretically calculated.  However, the circle provided for us was not perfect, so we decided to experimentally select the angle that would maximize the number of revolutions we make around the circle.  We used the theoretical value as our starting point (approximately .205 radians) and tuned from there.  We ultimately concluded that .192 radians worked best for us in this lab. </p1><br></br>
+    <p1>Below is a video of the car using the Open Loop controller to follow the circular path:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/openloop.gif"><br></br>
+      <p1>Figure 15: Following a circular path using Open Loop control.</p1><br></br>
+    </div>
+    <h3>Setpoint Control</h3>
+    <h4> Line Detection - Jose</h4>
+    <p1> Having developed a a good technique for cone detection using the color segmentation method, we created a modified version of the cone detector to follow an orange duct tape path. In order to detect this path we decided to keep the same centroid strategy as in the cone detector, but applied it to only the lower 25% of the image from our car's stereo camera. By doing so the path detector would focus on the portion of the path immidiately in front of it and generate a centroid for the path. Then, as implemented in the parking controller, the setpoint controller would use the centroid location to set its steering angle.</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/Selection_010.png"><br></br>
+      <p1>Figure 16: Cone detector strategy implemented on path</p1><br></br>
+    </div>
+
+
+
+    <h4> Setpoint Control Implementation - Samir</h4>
+    <p1>The setpoint controller was very similar in design to the cone follower. The Cone Detection node passed one piece of information: centroid shift. The input was subtracted from the setpoint to compute heading error, and the error was then passed into a PID controllers. Because we knew we were following a line, we set a constant speed to test the effectiveness of our controller at a given speed.</p><br>
+    <h5> Calibration and Tuning</h5>
+    <p1>The most important part of tuning the setpoint controller was not actually the gains, but the setpoint. Once the car was ready to test, we set it down on the line to follow in an ideal situation (perfectly centered). We echoed the centroid shift being passed into our controller, and then set that shift as our setpoint. This way, we knew any deviations/errors were a result of our controller and not because the camera was facing a slightly different direction than before.</p><br>
+    <p1>Once calibrated, we tuned our gains until we were satisfied with the performance. Our ideal gains came out to be: <b>P: 1.0</b>; <b>I: 0.05</b>; <b>D: 0.005</b> at a <b>drive speed of 4.0</b>.</p><br>
+    <p1>First, we tested our setpoint controller on the circular track:</p>
+    <div align="center">
+      <img src="../lab4_web/img/setpoint.gif"><br></br>
+      <p1>Figure 17: Following a circular path with the Setpoint controller.</p1><br></br>
+    </div>
+    <p1>After having got our Setpoint controller to work at following the circular path, we wanted to test to see how it did with something more challenging. The following was the outcome:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/setpointpov.gif" width="300 px" height="200px"><br></br>
+      <p1>Figure 18: First person view from car of following a more complicated path with the setpoint controller.</p1><br></br>
+    </div>
+
+
+
+    <h3>Trajectory Tracking</h3>
+    <h4>Plotting the Trajectory - Jose & Martina</h4>
+    <p1>In order to implement a trajectory-based method, we first needed to determine the car’s desired trajectory. In this case, the desired trajectory was the orange circle we needed to follow. The trajectory needed to be updated in real time as the car traversed the circle and saw different parts of the orange line.</p1><br></br>
+    <p1>To characterize the trajectory, we used the same OpenCV getContours() method that we used for cone detection. This gave us the contours of the orange line, as shown below:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure15.jpeg" width="600" height="450"><br></br>
+      <p1>Figure 19: Contours of the tape line.</p1><br></br>
+    </div>
+    <p1>Then, we needed to process the contours into a data format that could be easily passed to our image-to-world coordinate converter, the trajectory equivalent of our centroid and bounding box from the cone detection algorithm. We considered a variety of ways to combine the left and right contours into a single trajectory, but eventually decided to focus only on the left contour. We fit a polynomial to the contour, then passed the polynomial coefficients to our image-to-world coordinates converter.</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure16.jpeg" width="600" height="450"><br></br>
+      <p1>Figure 20: Raw contour data, show as points, and the polynomial fit to our contour data, the blue line.</p1><br></br>
+    </div>
+
+    <h4> Image to World Coordinate Transformation - Samir</h4>
+    <p1>Similar to the centroid to height transform for the cone following, we needed some way to transform image coordinates to world coordinates. From here on, we will use <b>(u,v)</b> to refer to image coordinates and <b>(x,y)</b> to refer to world coordinates. Our first step was to gather data. We marked out several points on the ground at 1/2 foot intervals from our car and took a picture.</p1><br><br>
+    <div align="center">
+      <img src="../lab4_web/img/dataset.png" align="middle" width='450' height="300"><br><br>
+      <p1>Figure 21: Gathering data for transformation</p1><br><br>
+    </div>
+    <p1>The image was processed then to create 4-vectors for each point (green tape) in the image: [u_abs, v_abs, x, y]. u_abs and v_abs are the absolute pixel coordinates. From here, the absolute pixel coordinates were divided by the image height and width to give percentages: [u, v, x, y]. This was necessary as the resolution of the image received by the camera might change; creating the transform as a function relative u and v allowed us to confidently implement this in all conditions. Next, we realized that x and y were not independently functions of u and v. <b>Both x and y depended on both u and v.</b> In order to solve this issue, we decided to use a 3D surface fit as opposed to a 2D polynomial fit as we had used for the cone following. </p><br>
+    <p1>We decided to go with a quadratic surface fit. The equation for a quadratic surface is <span style="font-family:courier;">Ax + By + Cxy + Dx<sup>2</sup> + Ey<sup>2</sup> + F.</span> We used scipy's least squares regression function - <span style="font-family:courier;">scipy.linalg.lstsq()</span> - to create two regressions: <span style="font-family:courier;">x(u,v)</span> and <span style="font-family:courier;">y(u,v)</span>. The two surface fits are pictures below. Once we had the two sets of equations coefficients for the two surface fits, we had a reliable way to transform (u,v) to (x,y). In other words, we could now take image world points (or contours) passed from the detection algorithm, convert it to real world points (or line), and pass it to our trajectory controller.</p>
+    <div align="center">
+      <img src="../lab4_web/img/surface_fit_x.png" align="middle" width='450' height="300">
+      <img src="../lab4_web/img/surface_fit_y.png" align="middle" width='450' height="300"><br></br>
+      <p1>Figure 22: Surface Fits from (u,v) to x (left) and y (right)</p1><br><br>
+    </div>
+
+    <h4>Pure Pursuit Control - Clemmie & Nick</h4>
+    <p1>We implemented two different forms of the pure pursuit controller:  in one form, we set the lookahead distance from the rear wheel axle; in the other, we set the lookahead distance from some distance in front of the rear axle.</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure17.jpeg"><br></br>
+      <p1>Figure 23: Pure pursuit geometry with lookahead distance measured from rear axle. Source: www.ri.cmu.edu</p1><br></br>
+      <img src="../lab4_web/img/figure18.jpeg"><br></br>
+      <p1>Figure 24: Pure pursuit geometry with lookahead distance measured in front of rear axle. Source: 16.405 Lecture Slides - “Control Systems”</p1><br></br>
+    </div>
+    <p1>The lateral offset (x-offset) between the path, on which the car is currently traveling, and the trajectory mapped out to the goal point is calculated by solving the following equation:</p1>
+    <div align="center">
+      <img src="../lab4_web/img/figure19.png"><br></br>
+    </div>
+    <p1>In this equation, f(x) is the trajectory equation, the coefficients of which are input arguments to the pure pursuit controller. It is of the form:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure20.png"><br></br>
+    </div>
+    <p1>Then the angle, 𝝰 (alpha), shown in the above figure was calculated:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure21.png"><br></br>
+    </div>
+    <p1>At this point the steering angle was calculated in different ways depending on whether the lookahead distance was calculated from the rear axle or slightly in front of it (4 inches). For the lookahead distance set at the rear axle, we calculated the steering angle to be sent to the robot by doing the following:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure22.png"><br></br>
+    </div>
+    <p1>For the lookahead distance set a distance lfw (4 inches) in front of the rear axle, the steering angle to be sent to the robot was calculated with the following equation:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure23.png"><br></br>
+    </div>
+    <p1>We set the lookahead distance depending on the speed that the car was moving at (making the assumption that the linear velocity was constant). We set the lookahead distance with:</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/figure24.png"><br></br>
+    </div>
+    <p1>In the above equation, k is the steering angle, and is the variable that we changed in order to tune our controller.</p1><br></br>
+    <p1>After testing both implementations of the pure pursuit controller, we decided to go with the one that sets the lookahead distance from slightly in front of the rear axle, because it was working more effectively.</p1><br></br>
+    <p1>Once we implemented the the pure pursuit controller we were able to succesfully look ahead, generate a trajectory, and consequently follow the left edge of the tape as planned, however the trajectory tracker was having difficulties generating a trajectory for segments of the duct tape path where significant folds exsisted. Without being able to create a robust trajectory all the time the pure pursuit controller consequently strugled, as can be seen in the figure below.</p1><br></br>
+    <div align="center">
+      <img src="../lab4_web/img/pure.gif"><br></br>
+      <p1>Figure 25: Trajectory Tracking-Pure Pursuit Controller Following Path.</p1><br></br> 
+    </div>
+  <h3>Experimentation of Controllers</h3>
+  <p1>While experimenting with the three different methods of control - open loop control, setpoint control and trajectory tracking - we took videos and made some observations on the effectiveness of each control type.</p1><br></br>
+
+  <style>
+  table, th, td {
+    border: 1px solid black;}
+    </style>
+  <table style="width:100%">
+    <tr>
+      <th align = "center">Control Type</th>
+      <th>Maximum Number of Laps</th>
+      <th> Maximum Lap Speed</th>
+    </tr>
+    <tr>
+      <td>Open Loop</td>
+      <td>3</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <td>Setpoint Control</td>
+      <td>Inf</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <td>Trajectory Tracking</td>
+      <td>2</td>
+      <td>1.0</td>
+    </tr>
+  </table><br></br>
+
+  <h2>Teamwork / Lessons Learned</h2>
+  <p1>Clemmie: When tasks take different lengths of time, it is important to keep everyone in the loop and frequently update the team on the status of your progress, so people can offer help where it is needed.</p1><br></br>
+  <p1>Jake: There is no substitute to working in the same room with your teammates.  Ideas flow faster and more effectively, thus creating an environment to better solve problems.</p1><br></br>
+  <p1>Jose: Making smaller subgroups has proven extremely useful given the difficulty in having full team meetings. However, identifying difficult tasks and having the appropiate amount of people per task still needs to improve.</p1><br></br>
+  <p1>Martina: Creating expert subgroups is very useful. For this lab, we split into teams that worked on machine vision and the controller. This made it easier to coordinate work, as we only had to coordinate within our subgroups until it was time to integrate.</p1><br></br>
+  <p1>Nick: As the semester gets busier it becomes harder to keep up with each other and work together. During these times it becomes even more important that everyone communicates frequently about meeting times and where they are on the lab. </p1><br></br>
+  <p1>Samir: Integration takes a long time. Secondly, when tasks are divided, many people are left with nothing to do and no idea what is currently being done because it was not their task, so it is important to make sure everyone is up to date is crucial to efficiently working in the last parts of the labs.</p1><br></br>
+  <h3>Resources</h3>
+  <p1>Efros, Alexei. “Feature Matching and RANSAC.” Powerpoint, Computational Photography, CMU, Fall 2005.</p1><br></br>
+  <p1>“Feature Matching.” OpenCV. Last modified November 10, 2014. http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_matcher/py_matcher.htm</p1><br></br>
+  <p1>Ian London, “VBoW Pt 1 - Image Classification in Python with SIFT Features.” Ian London’s Blog. May 6, 2016. https://ianlondon.github.io/blog/how-to-sift-opencv/</p1><br></br>
+  <p1>“Introduction to SIFT (Scale-Invariant Feature Transform).” OpenCV. Last modified December 18, 2015. http://docs.opencv.org/3.1.0/da/df5/tutorial_py_sift_intro.html </p1><br></br>
+  <p1>Mordvintsev, A. OpenCV-Python Tutorials Documentation. Last modified February 28, 2017. 
+https://media.readthedocs.org/pdf/opencv-python-tutroals/latest/opencv-python-tutroals.pdf</p1><br></br>
+  <p1>"Multi-scale Template Matching using Python and OpenCV." PyImageSearch. Last modified January 26, 2015. http://www.pyimagesearch.com/2015/01/26/multi-scale-template-matching-using-python-opencv/</p><br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div><!-- /.container -->    
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

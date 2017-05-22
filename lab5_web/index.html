@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://web.mit.edu/j_g0m3z/www/G.JPG">
+
+    <title>RSS First Team Best Team</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/starter-template.css" rel="stylesheet">
+    <script src="js/ie-emulation-modes-warning.js"></script>
+    <script src="js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- Math Script -->
+      <script type="text/javascript">
+      window.MathJax = {
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          processEscapes: true
+        }
+      };
+      </script>
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+  </head>
+
+  <!-- NAVBAR
+================================================== -->
+  <body>
+    <div class="navbar-wrapper">
+      <div class="container">
+
+        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="../index.html">RSS First Team Best Team</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/about_barebones/index.html">About</a></li> -->
+                <li ><a href="../about/index.html">About</a></li>
+                <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/Jose_Gomez_resume_Fall_2016.pdf">Resume</a></li> -->
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Labs <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../lab2_web/index.html">Lab 2</a></li>
+                    <li><a href="../lab3_web/index.html">Lab 3</a></li>
+                    <li><a href="../lab4_web/index.html">Lab 4</a></li>
+                    <li><a href="../lab5_web/index.html">Lab 5</a></li>
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/zerog_barebones/index.html">Control Moment Gyroscopes (CMGs)</a></li> -->
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/righthand_barebones/index.html">RightHand Robotics</a></li> -->
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/1682_barebones/index.html">Senior Capstone</a></li> -->
+                  </ul>
+                </li>               
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class = "container" align='center'>
+    <h1>LAB 5: Report </h1>
+    <h3>Team 1</h3>
+    <div align='center'>
+      <p1> Clementine Mitchell, Martina Stadler, Nick Villanueva, Samir Wadhwania, Jake Liguori, Jose Gomez<p1/>
+   
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Intro</h1>
+    <h3>Overview - Jake</h3>
+    <div align='left'>
+      <p1>The purpose of this lab was for teams to implement Monte Carlo Localization (MCL) both in the simulator and on the racecar.  MCL is an algorithm that uses a particle filter to localize in the environment of a known map.  The algorithm begins with an equal belief that it can be at any location on the map.  As the robot moves and acquires motion and sensor data, the robot begins to more strongly believe it is some locations more than others.  Correct implementation of this algorithm means the robot will eventually converge on belief that it is in a specific location in the map with some small variance.  Localization has the potential to be useful for the final racecar challenge (racing in a known map).  A racecar that can determine where on the race course it currently presides can begin to “strategize” for upcoming turns and obstacles that it knows exist.<p1/>
+   
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h3>Approaches - Jake</h3>
+    <div align='left'>
+      <p1>Our team initially broke up into sub-teams for this lab.  1-2 people worked on becoming more knowledgeable on the motion model, sensor model, MCL, and visualization techniques.  This lab required the most integration effort of all the labs we have completed thus far, so subteams were often in close contact to communicate what data they needed/would send to others.  Once we had initial solutions to each of our tasks, we came together as a team to debug and integrate our software into a cohesive particle filter.  All tasks and point people for them were documented in an Microsoft Excel file for the duration of the lab.<p1/>
+        <br></br>
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Motion Model - Jake</h1>
+    <div align='left'>
+      <p1>The motion model is used in the particle filter as a way of obtaining odometry data.  This data is used to assist in the localization process in our known environment.  After launching the software for our particle filter, we click on the approximate initial position of the vehicle on the known map, which in this case is the Stata basement.  Our algorithm then begins reading odometry data from the car.  The particle filter is notified when we start reading odometry data.  Thus, it will not start the localization process until we click on the map.</p1><br><br>
+
+      <p2>The odometer consistently publishes odometry data once the car is initialized. Each time it does, our code finds the difference between the current x, y, and theta values and those obtained in the previous time step. Thus, we can determine how much the car has moved in the global coordinates of the odometry since the last time step.  This transformation is applied to the local coordinate system of the car in the previous time step.  Each particle in our particle filter is also shifted by these values, but in the particle frame.  We also add random noise as we shift each particle (in a way which we empirically found to work well) because we recognize that our odometer does not provide perfect data due to imperfections such as tire slip.  All particles now will have updated x, y, and theta positions based on the motion of the car.<p2/><br></br>
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Sensor Model</h1>
+    <h3>Creating the Lookup Table - Clemmie</h3>
+    <div align='left'>
+      <p1>A sensor model was used to calculate a lookup table, which we used to efficiently find the most likely location of our racecar, given the map and the LIDAR data. The sensor model was a combination of the Gaussian model, which modeled the probability of detecting some known obstacle within the map, and some unknown object model.<p1/><br></br>
+      <p2>The values for calculating the model (the Gaussian in particular) were empirical values obtained from a large collection of data obtained from the LIDAR with the racecar fixed in a particular location. We saved this data in a text file and converted these range values into units of pixels to work with later. The Gaussian model was calculated using the following equation:</p2><br></br>
+      <div align="center">
+        <p3 style="font-size: 1.5em">$p(r|d) = \frac{1}{\sigma \cdot \sqrt{2 \pi}} \cdot e^{-\frac{(r-d)^2}{2 \cdot \sigma^2}} $</p3>
+      </div><br></br>
+      <p4>Here, $ \sigma $ is the standard deviation, which was calculated using the data collected from the LIDAR. It is possible to update the standard deviation to tune the sensor model.</p4><br><br>
+      <p5>We created the unknown object model based on a combination of the following:
+        <ul>
+          <li>We accounted for the probability of a short measurement due to unknown obstacles (for example people crossing in front of the path)  with a downward sloping line as the ray moved further away from the robot.</li>
+          <li>We represented the probability of a missed measurement, usually due to a reflected LiDAR beam, with a large spike in probability at the maximal range value -  this ensures that reflected measurements do not significantly discount the particle weights.</li>
+          <li>We also included the probability of a random measurement, due to unforeseen influences, with a small uniform value.</li>
+        </ul>
+      A slice of the sensor model ended up looking like the graph in Figure 1 below.</p5><br><br>
+      <div align="center">
+        <img src="img/sensor_model_slice.png" align="middle"><br><br>
+        <p>Figure 1: Lookup Slice</p>
+      </div><br><br>
+      <p6>We were then able to create the following three dimensional surface, shown in Figure 2, representing the probability of a measured distance given a ground-truth distance (all were calculated in pixels).</p6><br><br>
+      <div align="center">
+        <img src="img/sensor_model.png" align="middle"><br><br>
+        <p>Figure 2: Sensor model surface for lookup table</p>
+      </div><br><br>
+      <p7>This surface was then discretized to create the lookup table, to increase efficiency. We used this lookup table in order to be able to efficiently search for the most probable location of the robot given the measurements. The lookup table is a two dimensional table of probability values for some discretization of measured range from the LIDAR sensor, r, and the ground-truth range, d, (calculated using the Rangecast method described below). The general format of the lookup table is shown in Figure 3 below.</p7><br><br>
+      <div align="center">
+        <img src="img/lookup_table.png" align="middle"><br><br>
+        <p>Figure 3: Layout of the lookup table</p>
+      </div><br><br>
+    </div>
+    </div><!-- /.container -->    
+
+    <div class = "container" align='left'>
+    <h3>Updating the Sensor Model & Raycasting - Martina</h3>
+    <div align='left'>
+      <p1>After the measurement model is precomputed, it must be integrated into the sensor model. The sensor_model() function updates particle weights, or likelihoods of being in a given pose, during every MCL iteration based on the precomputed measurement model and current sensor data. In the action model, new particle locations are calculated based on odometry data. In the sensor model, the current lidar data is compared to the expected lidar data, given that the robot is in a specific pose as dictated by the action model. By multiplicatively weighting particles based on the expected and current lidar values, we determine the likelihood of the robot being in a given pose.<p1/><br></br>
+      <p2>One key component of this computation is determining the expected distance of each pose hypothesis to an obstacle in an occupancy grid; in our case, we were interested in the distance of a particle to the wall of our map of MIT’s Stata basement. To do this, we used the open-source Rangelibc library developed by Corey Walsh. This library uses ray casting algorithms specifically optimized for use in particle filter sensor models.</p2><br><br>
+
+      <p3>Ray casting is a general technique used to determine the distance from an observer to an object in both 2D and 3D space. In ray casting, the observer has an “eye”, or a point from which distances are measured. Then, line segments, or rays, are drawn from the eye, extending in a given direction into 2D or 3D space. Finally, intersections between the rays and objects in the scene are found by taking advantage of the relatively well-studied concept of geometric intersections. In our implementation, the distance from each particle to the wall was calculated at 25 different angles, where the number of angles was experimentally optimized.</p3><br><br>
+
+      <p4>After calculating a particle’s distance from the wall for our given set of angles, the raycast data was used as the expected particle pose in our sensor model weight calculations. The particle weights were updated, then used in the MCL algorithm, as discussed below.</p4><br><br>
+    </div>
+    </div><!-- /.container -->  
+
+    <div class = "container" align='left'>
+    <h1>Implementation<h1>
+    <h3>Monte Carlo Localization & Particle Resampling - Samir/Jose</h3>
+    <div align='left'>
+      <p1>Monte Carlo Localization (MCL) - also known as a particle filter localization - is the algorithm utilized to determine our location in a given map. The particle filter works by keeping a distribution of likely states, and updating the distribution with each new odometry measurement and sensor reading. A “particle” here refers to a possible state (in our case, an x-coordinate, y-coordinate, and $\Theta$), and each particle has a corresponding “weight” that represents the likelihood of the particle being the true state of the system.<p1/><br></br>
+    </div>
+    </div><!-- /.container --> 
+
+    <div class = "container" align='left'>
+    <h4>Housekeeping</h4>
+    <div align='left'>
+      <p1>All arrays are numpy arrays:<p1/><br></br>
+      <div align='center'>
+        <table>
+          <tr>
+            <th>Variable</th>
+            <th>Size</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><span id="code">self.MAX_PARTICLES</span></td>
+            <td><i>Scalar</i></td>
+            <td>Number of particles (N) to use in MCL</td>
+          </tr>
+          <tr>
+            <td><span id="code">self.particles</span></td>
+            <td><i>N x 3 Matrix</i></td>
+            <td>Array to store actual particles; each particle is 3-dimensional</td>
+          </tr>
+          <tr>
+            <td><span id="code">self.weights</span></td>
+            <td><i>1 x N Vector</i></td>
+            <td>Array to store weights; each weight in column <i>i</i> corresponds to the particle in row <i>i</i>  of <span id="code">self.particles</span></td>
+          </tr>
+          <tr>
+            <td><span id="code">self.inferred_pose</span></td>
+            <td><i>Scalar</i></td>
+            <td>The inferred pose from the set of particles and their weights</td>
+          </tr>
+        </table><br>
+        <p>Figure 4: Class properties for implementing the particle filter</p><br>
+      </div>
+    </div>
+    </div><!-- /.container --> 
+
+    <div class = "container" align='left'>
+    <h4>The MCL Algorithm</h4>
+    <div align='left'>
+      <p1>The MCL method is called every time an odometry measurement is received - this is because odometry measurements are received at a lower frequency than sensor measurements. When the method is called, the following steps are performed to update the particle distribution:</p1><br><br>
+
+      <ol>
+        <li>
+          <p>The particles are sampled. This takes us from N particles with varying weights to N particles with equal weights. Particles with higher weights are sampled more often than those with low weights, reflecting the initial distribution.</p>
+          <div id="code">
+          <p>
+            self.particles = self.particles[<br>
+            &emsp;&emsp;&emsp;&emsp;np.random.choice(<br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.particles.shape[0],<br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.MAX_PARTICLES, <br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;p=self.weights <br>
+            &emsp;&emsp;&emsp;&emsp;)<br>
+            ]
+          </p>
+          </div>
+        <br></li><br>
+        <li>
+          <p>The motion model updates the particles. In the MCL method, a single line invokes the motion method:</p>
+          <div id="code">
+          <p>
+            self.motion_model()
+          </p><br>
+          </div>
+          <p>There are two key components to this action: First, the odometry reading is taken and applied collectively to the particles. Second, random noise is added to each of the particles separately. It is this addition of noise that makes the particle filter robust to imperfections in sensor measurements. The key takeaway is that self.particles is updated with new positions for each particle.</p>
+        <br></li><br>
+        <li>
+          <p>The sensor model updates the weights. Similarly, a single line invokes the sensor method:</p>
+          <div id="code">
+          <p>
+            self.sensor_model()
+          </p><br>
+          </div>
+          <p>The sensor model works primarily through the Rangelibc package outlined above. For each particle in <span id="code">self.particles</span>, it determines the likelihood that our system would have observed the received sensor measurements in our given map. <span id="code">self.weights</span> is then updated to reflect these probabilities.</p>
+        <br></li><br>
+        <li>
+          <p>Because we are maintaining a probability distribution, the weights of all the particles have to sum up to 1. In order to enforce this, we simply redistribute our weights:</p>
+          <div id="code">
+          <p>
+            self.weights = self.weights / float(sum(self.weights))
+          </p><br>
+          </div>
+          <p>After going through each of these steps, we end up with a new set of particles that reflect possible locations of our system, as well as new weights for each of the updated particles.</p>
+        <br></li><br>
+      </ol>
+    </div>
+    </div><!-- /.container -->     
+
+    <div class = "container" align='left'>
+    <h3>The Inferred Pose</h3>
+    <div align='left'>
+      <p1>We have one final method to accurately represent our current estimate of our state - <span id="code">self.expected_pose()</span>. We utilize Expected Value Theorem to infer our pose from all of our particles and their respective weights. Three key notes here:<p1/><br></br>
+      <ol>
+        <li>
+          <p>Expected Value Theorem is defined as follows:</p>
+          <div style="font-weight:bold" align="center">
+          <p>
+            $ E[X] = \sum x_i \cdot p_i $
+          </p>
+          </div>
+          <p>where $X$ refers to our set of particles and their weights; $x_i$ is the particle; $p_i$ is the weight of the particle.</p>
+        <br></li><br>
+        <li>
+          <p>We treat each degree independently; in other words, we use Expected Value Theorem for the x-coordinate, y-coordinate, and $\Theta$ separately, and combine the expected values for each degree to create a resulting pose.</p>
+        <br></li><br>
+        <li>
+          <p>To quickly and easily multiply the particles with their weights, we reshape and tile <span id="code">self.weights</span>. We duplicate the row twice to go from a <i>1 X N vector</i> to a <i>3 X N matrix</i> (because our state is 3-dimensional), and transpose it to result in a final <i>N X 3 matrix</i>. This way, we can perform element-wise multiplication with <span id="code">self.particles.</span></p>
+        <br></li><br>
+      </ol>
+      <p2>Our final implementation to infer the pose is as follows:</p2><br><br>
+      <div id="code"  style="border-bottom: 1px solid #D3D3D3;">
+        <p>
+          self.inferred_pose = np.sum(<br>
+          &emsp;&emsp;&emsp;&emsp;np.multiply(<br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;self.particles, <br>
+          &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;np.tile(self.weights, (3,1)).transpose()<br>
+          &emsp;&emsp;&emsp;&emsp;), <br>
+          &emsp;&emsp;&emsp;&emsp;axis=0 <br>
+          )
+        </p>
+      <br></div><br>
+    </div>
+    </div><!-- /.container -->      
+
+    <div class = "container" align='left'>
+    <h1>Integration</h1>
+    <h3>Visualization</h3>
+    <div align='left'>
+      <p1>In order to help verify that our MCL was functioning correctly we wanted to visualize the particle filter. We were able to visualize our method by publishing information of interest from our particle filter to RViz and then subscribing to these topics. This included the particles, the expected value or inferred pose of our car, laser scan data, and raycast data or “fake scan.” This was then shown on top of a map of the Stata Basement where we were driving the car. In our video, the particles were represented by small blue arrows. The inferred pose was shown as a large red arrow and the laser data was shown as rainbow colored dots along the walls of the map. </p1><br><br>
+
+      <p2>To have the scan data show up correctly on the map we also had to publish a transform frame so that RViz would know where to place the data on the visualizer. This was simply the inferred position of our car and it’s orientation in quaternion. Additionally, we had to set the mapping from the base_link of the car to the map coordinates. </p2><br><br>
+
+      <p3>Once we were able to visualize what was happening in our particle filter we were able to both verify and troubleshoot our method. An example of the visualization can be seen below in figure 5.<p3/><br></br>
+      <div align="center">
+        <img src="img/MCL_testing.gif" align="middle"><br><br>
+        <p>Figure 5: Visualization of Particle Filter</p>
+      </div><br><br>
+    </div>
+    </div><!-- /.container -->    
+
+    <div class = "container" align='left'>
+    <h3>Code Structure</h3>
+    <div align='left'>
+      <p1>Because the MCL algorithm is easily broken up into parts - sensor model, action model, etc. - each of the key components is defined as a method within the <span id="code">ParticleFilter</span> class. However, in order to keep the code efficient and speedy, we decided to forgo passing variables into each of the methods. Instead, we kept track of all useful variables needed by the various methods; beyond the four mentioned above in Housekeeping, some others include:</p1><br><br>
+      <div align='center'>
+        <table>
+          <tr>
+            <th>Variable</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><span id="code">self.last_pose</span></td>
+            <td>The previous pose used to determine <span>self.action</span> by finding the difference from new odometry measurements</td>
+          </tr>
+          <tr>
+            <td><span id="code">self.action</span></td>
+            <td>The action from <span id="code">odomCB<span id="code"> used in <span id="code">motion_model()<span id="code"> to update the particles</td>
+          </tr>
+          <tr>
+            <td><span id="code">self.observation</span></td>
+            <td>The observation from <span id="code">lidarCB</span> used in <span id="code">sensor_model()</span> with Rangelibc</td>
+          </tr>
+        </table><br>
+        <p>Figure 6: Other tracking properties for sensor and motion models</p><br>
+      </div>
+
+      <p3>To summarize, none of the methods returned actual arrays or variables - this would slow down the runtime of our code due to the sheer size of the arrays, as well as the frequency with which we pass them around. Instead, with basic communication (systems engineering), we were able to confidently draw upon, modify, and set these class properties and know we would not run into errors due to confusions about naming, types, or sizes.<p3/><br></br>
+    </div>
+    </div><!-- /.container -->    
+
+    <div class = "container" align='left'>
+    <h3>Testing</h3>
+    <div align='left'>
+      <p1>When we finished the process of debugging and troubleshooting, we took our car into Stata basement for a test run. After verifying that our Lidar data, map server, and Rviz tool were all working correctly, we initialized a pose for our car. Using our joystick, we then drove around the basement and watched as the particle filter was able to - quite successfully - localize the car’s position as it moved throughout the map.</p1><br><br>
+      <div align="center">
+        <img src="img/car.gif" align="middle"><img src="img/rviz.gif" align="middle"><br><br>
+        <p>Figure 7: Testing the Particle Filter in Stata Basement</p>
+      </div><br><br>
+    </div>
+    </div><!-- /.container -->   
+
+  <div class = "container" align='left'>
+  <h1>Conclusion</h1><br>
+  <p1>Overall, while we did have relative success with this task, we ran into some debugging issues in the later stages of our integration. As what we are trying to achieve becomes more complex, it becomes even more essential to integrate our code early! A precondition to successful integration on a team project is mastering code sharing, such as Git.  The larger the project, the more important this becomes and the more mastery becomes necessary.</p1><br><br>
+
+  <p2>Tracking changes is very important when working on a team that needs to make simultaneous changes on a large amount of code. Without a methodical approach for tracking changes, troubleshooting and hypothesis testing when debugging can become a messy business.  It is essential to keep everyone updated on progress such that no-one falls behind.</p2><br><br>
+
+  <p3>Moreover, the entire team needs to be informed about technical changes as well as conceptual changes. If there are one or two people who made major implementations/revisions, it is difficult to debug without the implementers being there.</p3><br></br>
+  <h3>Resources</h3>
+  <h4>Note: The following are resources used <i>in addition to</i> those provided in the lab guidelines.</h4>
+  <p1>Fox, D., Burgard, W., &amp; Thrun, S. (1999). Markov localization for mobile robots in dynamic environments. <i>Journal of Artificial Intelligence Research, 11</i>, 391-427.</p1><br></br>
+  </div><!-- /.container -->    
+  <br><br>
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

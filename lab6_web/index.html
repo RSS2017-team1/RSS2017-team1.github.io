@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://web.mit.edu/j_g0m3z/www/G.JPG">
+
+    <title>RSS First Team Best Team</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/starter-template.css" rel="stylesheet">
+    <script src="js/ie-emulation-modes-warning.js"></script>
+    <script src="js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- Math Script -->
+      <script type="text/javascript">
+      window.MathJax = {
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          processEscapes: true
+        }
+      };
+      </script>
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+  </head>
+
+  <!-- NAVBAR
+================================================== -->
+  <body>
+    <div class="navbar-wrapper">
+      <div class="container">
+
+        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="../index.html">RSS First Team Best Team</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/about_barebones/index.html">About</a></li> -->
+                <li ><a href="../about/index.html">About</a></li>
+                <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/Jose_Gomez_resume_Fall_2016.pdf">Resume</a></li> -->
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Labs <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="../lab2_web/index.html">Lab 2</a></li>
+                    <li><a href="../lab3_web/index.html">Lab 3</a></li>
+                    <li><a href="../lab4_web/index.html">Lab 4</a></li>
+                    <li><a href="../lab5_web/index.html">Lab 5</a></li>
+                    <li><a href="../lab6_web/index.html">Lab 6</a></li>
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/zerog_barebones/index.html">Control Moment Gyroscopes (CMGs)</a></li> -->
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/righthand_barebones/index.html">RightHand Robotics</a></li> -->
+                    <!-- <li><a href="http://web.mit.edu/j_g0m3z/www/1682_barebones/index.html">Senior Capstone</a></li> -->
+                  </ul>
+                </li>               
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class = "container" align='center'>
+    <h1>LAB 6: Report </h1>
+    <h3>Team 1</h3>
+    <div align='center'>
+      <p1> Clementine Mitchell, Martina Stadler, Nick Villanueva, Samir Wadhwania, Jake Liguori, Jose Gomez<p1/>
+   
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Intro</h1>
+    <h3>Overview - Jake</h3>
+    <div align='left'>
+      <p1>The purpose of this lab was to implement a path planner to follow trajectories in a known map.  Using a particle filter localization method, which we successfully implemented in the previous lab, we were able to follow these known trajectories both in the racecar simulator and on the racecar itself.  The particle filter defines our start point, and we manually select our desired goal point.  We use RVIZ to visualize these points, as well as the path produced by the RRT* path planning algorithm between them.<p1/>
+   
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h3>Approaches - Jake</h3>
+    <div align='left'>
+      <p1>Our team initially separated into sub-teams for this lab.  Teams of 1-2 people worked on editing the particle filter and safety controllers from previous labs, implementing path planning and trajectory tracking.  Once we found initial solutions to these individual components, we reassembled as a team to integrate our software and find a complete solution.  All tasks and point people for them were documented in an Microsoft Excel file for the duration of the lab.<p1/>
+        <br></br>
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Editing the Map - Martina</h1>
+    <div align='left'>
+      <p1>Because pure pursuit cuts corners, a path planned on the raw map may create trajectories that cut corners too sharply and cause the car to collide with the wall. In order to mitigate this risk, we created a dilated map, which increases the size of the map walls in pixels. This ensures that the car will have clearance from the wall, even if the planned trajectory barely avoids the wall.</p1><br><br>
+
+      <p2>To implement the dilation, we imported the original map and applied the dilate() function in the skimage.morphology package to it. We saved the dilated map, then used it as an input to the RRT* path planner.</p2><p2/><br></br>
+    
+      <div align="center">
+        <img src="img/basement_fixed.png" align="float">
+        <img src="img/basement_fixed_more_dilated.png" align="float"><br><br>
+        <p>Figures 1 &amp; 2: Raw Map Image and Dilated Map Image</p>
+      </div><br><br>
+    
+    </div>
+    </div><!-- /.container -->
+    
+        <div class = "container" align='left'>
+    <h1>Editing the Safety Controller - Jake</h1>
+    <div align='left'>
+      <p1>In addition to a trajectory tracker, we also implemented a safety controller in this lab.  As our racecar follows the RRT*-defined path, a scenario may arise where the desired path trajectory is too close to a wall for the path to be deemed a safe route.  We also intend for this safety controller to deal with any other obstacles that may show up while driving.  If the LIDAR system detects that the racecar has encountered an obstacle, the safety controller will seize control from the trajectory tracker.  The car will back up for one second and turn away from the obstacle simultaneously.  Assuming that an obstacle is no longer detected, the safety controller will then return control of the racecar to the trajectory tracker to continue on the desired path.  The turning of the vehicle while backing up will ensure that the racecar does not repeat its previous trajectory and end up pursuing the same unsafe one.
+</p1><br><br>
+
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h1>Editing the Monte Carlo Localization - Jose</h1>
+      <div align='left'>
+      <p1>In order to focus on the implementation of a path planner and a pure pursuit controller we decided to use the TA solution for the Monte Carlo Localization from lab 5.  The solution localizer was much more robust than our lab 5 implementation, so it provided a solid foundation for integration into a path planner and pure pursuit controller combination. However, given the need for the capability of setting a goal point and a start point for the path planner, the TA solution had to be modified. The modifications made were the creation of an inferred pose topic which would establish the starting point for the path planner in its first publication, and the creation of a goal point topic that would publish the goal point for the path planner when the 2D nav goal vector was placed in the Rviz visualization. Once both the start point and goal point were set within the particle filter, the path planner would be triggered and attempt to find its way from the start point to the goal point.
+<p1/><br></br>
+
+    </div>
+    </div><!-- /.container --> 
+
+
+    <div class = "container" align='left'>
+    <h1>Path Planning</h1>
+    <div align='left'>
+      <p1>Our team began by implementing a version of the RRT* algorithm, but due to how time-intensive this was, we also tried to implement the RRT algorithm, although there was much zigzagging within the solution path. In the end, we were able to make changes that significantly reduced the runtime of the RRT* algorithm, so it is used in our final implementation.</p1><br></br>
+    </div>
+    <h3>RRT - Clemmie</h3>
+    <div align='left'>
+      <p1>RRT stands for Rapidly Exploring Random Trees, and that is essentially what this algorithm does. A tree is drawn incrementally using samples taken randomly from the search space. Lending from Voronoi diagrams, the tree is inherently biased to grow towards unsearched areas of the map. The tree is rooted at the start location provided by the localization node.<p1/><br></br>
+    
+      <p2>The tree then grows using points randomly sampled from the usable search space. Usable space is defined as the space in the map that is unoccupied - the pixels from the map that are white and thus not covered by an obstacle such as a wall or undefined space in the map, which are black and grey respectively. As each random sample is drawn, a node is created between it and the nearest node in the tree if it is possible, i.e. it does not pass through any obstacles and passes entirely through free-space. This results in the addition of a new node to the tree which is between the randomly generated point and the nearest node in the current tree, either at the true distance of the sampled point from the tree or at a maximum distance away from the nearest node. Once a point within a set radius of the goal point is reached on the tree, the solution path is generated and returned.</p2>
+      <br><br>
+    <div align="center">
+      <img src="img/rrt_theory.PNG" align="middle"><br><br>
+      <p>Figure 3: Adding a new node to a tree in RRT.</p>
+    </div><br><br>
+    
+      <p3>We also biased the growth of the RRT towards our goal point, which was defined using a mouse click. We did this by introducing a probability of sampling the region near the goal point to guide the search of the map in the direction of the goal. Below is an image of the tree built using RRT (in blue) within the regular map and the eventual solution path (red) from the start point (green) to the goal point (purple).</p3>
+      <br><br>
+      <div align="center">
+        <img src="img/rrt_example.png" align="middle" style="width: 50%"><br><br>
+        <p>Figure 4: Tree built using RRT with solution path(red planning motion from a start point to a goal point.</p>
+      </div><br><br>
+    
+      <p4>The problem with RRT is that it does not converge to an optimal solution and zig-zags towards from the start to the goal point as shown in the figure above. We were particularly worried about points that rapidly approached the wall, as pure pursuit cuts corners. Therefore, we implemented RRT*, to smooth the zig-zag effect.</p4>
+    
+    </div>
+    </div><!-- /.container --> 
+
+    <div class = "container" align='left'>
+    <h3>RRT* - Clemmie, Martina</h3>
+    <div align='left'>
+      <p1>RRT* differs from RRT in that it converges to an optimal path by connecting new tree nodes to some notion of the “best” available node on the tree and by smoothing over previously existing nodes. To find the best node, the program searches through the nodes in the near region of the randomly sampled point to find the node, qmin, that is able to be connected to the randomly sampled point with the minimum cost. After that node, qmin, is found, the algorithm checks if this path is free of collisions with walls and other obstacles. If this is the case, we create a node for the randomly sampled point with parent qmin.  After, we access nodes close to the new node and determine if the path length to the close nodes would be shorter if the close node was connected to our new node. If this is the case, then the parent of the close node is updated to be the new node, and the cost of the close node is updated accordingly.</p1>
+    
+      <p2>While we were able to produce a path that looked much less oscillatory than that produced using RRT, our implementation was much too slow to be useful, so we needed to optimize this implementation as is described in the following section. Below is a representation of our implementation of RRT*; however, this originally took a long time to run, even though the distance from the start to the goal point is not too large.  </p2>
+      <br><br>
+      <div align="center">
+        <img src="img/rrt_star_slow_example.png" align="middle" style="width: 50%;"><br><br>
+        <p>Figure 5: Solution path found using slow implementation of rRRT* from the start point to a goal point.</p>
+      </div><br><br>
+    </div>
+    </div><!-- /.container -->
+      
+    <div class = "container" align='left'>
+    <h3>Optimizing the Algorithm - Martina</h3>
+    <div align='left'>
+
+    <p1>Using our initial algorithm, planning the short path displayed in figure x took on the order of minutes to run. Clearly, this was unacceptable, so the algorithm was reimplemented, optimized for speed.</p1>
+
+    <p2>We used a variety of techniques to increase our program’s speed. We focused on the parallel use of numpy arrays and hashable items (sets and dictionaries) to allow for quick element-wise computations on points and $O(1)$ lookup time for additional required information, like node parent and node cost.</p2>
+
+    <p3>We also implemented a unique collision checking algorithm, again optimized using numpy arrays, to avoid planning a corner-cutting path. First, we identified two points between which we wanted to check for collisions. Then, we found the slope of the line between the two elements, and applied the slope to all x values of pixels between the two points. Finally, we took the floor and ceiling of each y value to determine discrete pixels to check for collisions. Then, we individually checked the pixels for collisions.</p3>
+
+    <div align="center">
+      <img src="img/collision_checking.png" align="middle"><br><br>
+      <p>Figure 6: Visualization of collision checking algorithm. Light red pixels are checked for collisions.</p>
+    </div><br><br>
+
+    <p4> Our final optimized version of RTT*, below, ran on the car in 5 seconds. </p4>
+    <br><br>
+    <div align="center">
+      <img src="img/rrt_star_fast.png" align="middle"><br><br>
+      <p>Figure 7: Result of fast RRT* implementation.</p>
+    </div><br><br>
+
+
+    </div>
+    </div><!-- /.container -->
+
+    <div class = "container" align='left'>
+    <h3>Adding Temorary Wall Using Raycast to Implement</h3>
+    <div align='left'>
+   
+    <p1>When we created our path we didn’t always want to find the shortest path from the start position to the goal. In some cases the start position and goal would be close together, but we would like the path to loop around the map. In order to do this we had to find a method to create the path in the forward direction of the car. One solution we found was to create a “wall” behind the car so that the path could not loop around it and to the goal and instead force it to traverse the map. To make the wall we had to figure out which pixels were directly behind it. Luckily, RangeLibc has several methods that draw on a map and trace out a ray cast. Using the BresenhamsLine method we were able to trace out a line behind the car and perpendicular to its direction and draw it to an image. We then found the pixel locations of this line and removed them from our available cells from which to sample. Effectively this made a “wall” behind the car forcing the planner to make a path in the direction the car is facing. An example of one of these walls can be seen in Figure #. </p1>
+
+      <div align="center">
+        <img src="img/wall.png" align="middle" style="max-width: 70%; width: 40%;"><br><br>
+        <p>Figure 8: "Wall" Placed in Map.</p>
+      </div><br><br>
+
+    </div>
+    </div><!-- /.container -->  
+    
+    <div class = "container" align='left'>
+    <h1>Pure Pursuit</h1>
+    <div align='left'>
+   
+    <p1>In this version of pure pursuit, we found the closest point on the solution path from RRT* to the racecar’s current location. Then, using our lookahead distance from the location of the closest point on the solution path, we set a goal point, which was the point at which the circle intersected with the path. We then steered towards this point using the following control law:</p1>
+
+    <div align="center">
+      <img src="img/equation.png" align="middle"><br><br>
+    </div><br><br>
+
+    <p2>In the above equation, L1 is the distance between the current point and the goal point and L is the distance between the front and the rear axle and is the angle between the current heading and the heading towards the goal point. The diagram below shows the progression of these steps.</p2>
+    <br><br>
+    <div align="center">
+      <img src="img/pure_pursuit.png" align="middle" style="max-width: 60%;"><br><br>
+      <p>Figure 9: Pure Pursuit has 3 stages: finding the path, finding the desired goal, and moving to the goal.</p>
+    </div><br><br>
+
+    <p3>Unfortunately, we were unable to debug our pure pursuit implementation. After being unable to properly follow paths using a constant lookahead distance and setting our goal point to an intersection with the trajectory path, we descoped and attempted to plan a path between specific nodes in the trajectory path. This was unsuccessful, but we began to suspect that the way we calculated the angle between the current car heading and next waypoint on our trajectory was incorrect.  Next, we implemented a simpler control law, where we tried to make our car drive straight to our next waypoint (no pure pursuit); this did not work. Based on this result, we feel confident that our angle calculation was incorrect. However, we were unable to correct this issue.</p3>
+
+    <p4>Another issue that significantly reduced our ability to debug was our inability to visualize our waypoints in RVIZ. While we attempted to publish our path in map coordinates in RVIZ, which is also in map coordinates, we consistently threw a map transform error. This made it very challenging for us to determine if our car’s heading was correct while debugging.</p4>
+
+    </div>
+    </div><!-- /.container -->    
+
+    <div class = "container" align='left'>
+    <h1>Integration/Testing - Jake, Samir</h1>
+    <div align='left'>
+   
+   <p1>Each sub-team created its own Python script to execute their portion of the lab.  Thus, we had four Python scripts that were launched in the implementation of our final code.  This included the particle filter, path planner, pure pursuit controller, and the safety controller.  The integration process involved the entire team running these processes in the order seen above.  Thus, we completed the particle filter, then the path planner, etc. in what turned out to be a very linear integration process.  This was a long but necessary process because each script depended on the outputs of the previous one.  We tested all components first in the simulator and then on the racecar.</p1>
+
+    </div>
+    </div><!-- /.container -->   
+
+  <div class = "container" align='left'>
+  <h1>Conclusion</h1><br>
+  <div align='left'>
+
+  <p1>We had some trouble getting a working solution for this lab. This was largely due to a problem with our pure pursuit controller. The reason that this did not work is that we left the debugging for this part of the code until the last moment and because we had split up all of our tasks from the start of the lab, debugging as a team was difficult because a large amount of time was spent explaining code to others in order to work together.</p1>
+
+  <p2>Furthermore, our initial approach was to jump straight into the implementation of certain algorithms, which meant we had decided on several fairly complex solutions before fully understanding the requirements of the lab. This meant that we spent a lot of time coding things that were just too slow for what was required of this lab, which led to a lot of last minute work in attempting to optimize these things.</p2>
+
+  <p3>Perhaps in the future, we can make sure we have a more simple solution working before jumping into things that are more complex.</p3>
+
+  <h1>Resources</h1>
+  <h4>Note: The following are resources used <i>in addition to</i> those provided in the lab guidelines.</h4>
+  <p1>Karaman, Sertac, &amp; Frazzoli, Emilio (2011). Sampling-based Algorithms for Optimal Motion Planning. <i>International Journal of Robotics REsearch.</i></p1><br></br>
+  </div>
+  </div><!-- /.container -->    
+  <br><br>
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

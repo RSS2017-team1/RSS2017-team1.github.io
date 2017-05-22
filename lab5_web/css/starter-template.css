@@ -1,0 +1,43 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+img {
+	max-width: 50%;
+	max-height: 50%;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+table {
+	margin: 0 auto;
+	width: 90%;
+}
+
+td, th {
+	text-align: center;
+}
+
+#code {
+	font-family: courier;
+}
+
+#code p {
+	margin: 0 auto;
+	width: 40%;
+	font-weight: bold;
+}
+
+th {
+	background-color: #D3D3D3;
+}
+
+ol li {
+	border-bottom: 1px solid #D3D3D3;
+}
